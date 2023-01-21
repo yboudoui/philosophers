@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 07:36:50 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/21 14:24:17 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/21 18:19:18 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,11 @@ t_pool_data	create_pool_data(t_input arg)
 	out = ft_calloc(1, sizeof(struct s_pool_data));
 	if (out == NULL)
 		return (NULL);
+	out->start = ft_calloc(1, sizeof(bool));
+	out->start_time = ft_calloc(1, sizeof(struct timeval));
 	out->forks = ft_calloc(size, sizeof(bool));
 	out->forks_mutex = ft_calloc(size, sizeof(pthread_mutex_t));
-	if (out->forks == NULL || out->forks_mutex == NULL)
+	if (!out->start || ! out->start_time || !out->forks || !out->forks_mutex)
 		return (destroy_pool_data(out), NULL);
 	index = 0;
 	while (index < size)
@@ -76,6 +78,8 @@ void	destroy_pool_data(void *data)
 	index = 0;
 	while (index < input->size)
 		pthread_mutex_destroy(&input->forks_mutex[index++]);
+	free(input->start);
+	free(input->start_time);
 	free(input->forks_mutex);
 	free(input->forks);
 	pthread_mutex_destroy(&input->dead_mutex);
