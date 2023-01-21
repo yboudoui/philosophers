@@ -6,7 +6,7 @@
 #    By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/19 14:53:15 by yboudoui          #+#    #+#              #
-#    Updated: 2023/01/21 17:48:40 by yboudoui         ###   ########.fr        #
+#    Updated: 2023/01/21 17:59:17 by yboudoui         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,11 +27,14 @@ SRCS	=\
 ./src/utils/atoi.c\
 ./src/parser/parser.c\
 ./src/fork.c\
+./src/routine.c\
+./src/routine_utils.c\
 ./src/philosopher.c\
 ./src/pool/pool_data.c\
 ./src/pool/pool.c\
 
 INCS	=\
+./inc\
 ./inc\
 ./inc/utils\
 ./inc/utils/memory\

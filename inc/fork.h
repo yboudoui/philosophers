@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 17:34:23 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/17 07:40:34 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/21 18:22:37 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 
 /* ************************************************************************** */
 
-typedef struct s_fork	*t_fork;
+typedef struct s_fork		*t_fork;
 struct s_fork {
 	pthread_mutex_t	mutex;
 	bool			is_taken;
