@@ -6,16 +6,11 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 17:51:41 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/18 18:03:00 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/21 13:54:40 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosopher.h"
-
-void	update_last_eat(t_philo_data *philo)
-{
-	gettimeofday(&philo->last_eat, NULL);
-}
 
 t_philosopher	create_philosopher(uint64_t id, void *shared_data)
 {
@@ -28,6 +23,7 @@ t_philosopher	create_philosopher(uint64_t id, void *shared_data)
 		return (NULL);
 	out->data.id = id;
 	out->data.shared_data = shared_data;
+	out->data.last_eat = time_now_millisecond();
 	pthread_mutex_init(&out->data.mutex, NULL);
 	return (out);
 }

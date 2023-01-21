@@ -6,34 +6,38 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 07:36:50 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/18 18:14:52 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/21 14:24:17 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pool.h"
 
-unsigned long	diff(t_pool_data data)
+unsigned long	time_now_millisecond(void)
 {
-	struct timeval	new;
+	struct timeval	now;
 
-	gettimeofday(&new, NULL);
-	new.tv_sec -= data->start_time.tv_sec;
-	new.tv_usec -= data->start_time.tv_usec;
-	unsigned long out = (new.tv_sec * 1e6) + new.tv_usec;
-	return (out / 1000);
+	gettimeofday(&now, NULL);
+	return (((now.tv_sec * 1e6) + now.tv_usec) / 1e3);
+}
+
+unsigned long	elapse(struct timeval new, struct timeval old)
+{
+	unsigned long	a;
+	unsigned long	b;
+
+	a = (new.tv_sec * 1e6) + new.tv_usec;
+	b = (old.tv_sec * 1e6) + old.tv_usec;
+	return ((a - b) / 1e3);
 }
 
 unsigned long	elapse_time(t_philo_data *philo)
 {
-	t_pool_data		pool;
 	struct timeval	new;
+	t_pool_data		pool;
 
 	pool = philo->shared_data;
 	gettimeofday(&new, NULL);
-	new.tv_sec -= pool->start_time.tv_sec - philo->last_eat.tv_sec;
-	new.tv_usec -= pool->start_time.tv_usec - philo->last_eat.tv_usec;
-	unsigned long out = (new.tv_sec * 1e6) + new.tv_usec;
-	return (out / 1000);
+	return (elapse(new, (*pool->start_time)));
 }
 
 t_pool_data	create_pool_data(t_input arg)
@@ -53,11 +57,11 @@ t_pool_data	create_pool_data(t_input arg)
 	index = 0;
 	while (index < size)
 		pthread_mutex_init(&(out->forks_mutex[index++]), NULL);
-	//pthread_mutex_init(&out->dead_mutex, NULL);
+	pthread_mutex_init(&out->dead_mutex, NULL);
 	pthread_mutex_init(&out->print_mutex, NULL);
+	pthread_mutex_init(&out->mutex_start, NULL);
 	out->size = size;
 	out->arg = arg;
-	gettimeofday(&out->start_time, NULL);
 	return (out);
 }
 
@@ -74,6 +78,7 @@ void	destroy_pool_data(void *data)
 		pthread_mutex_destroy(&input->forks_mutex[index++]);
 	free(input->forks_mutex);
 	free(input->forks);
-	//pthread_mutex_destroy(&input->dead_mutex);
+	pthread_mutex_destroy(&input->dead_mutex);
+	pthread_mutex_destroy(&input->mutex_start);
 	free(input);
 }

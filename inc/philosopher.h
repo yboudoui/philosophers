@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 17:52:04 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/18 18:00:42 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/21 12:22:17 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,9 @@ typedef enum e_hands {
 
 typedef struct s_philo_data {
 	pthread_mutex_t	mutex;
-	uint64_t	id;
-
-	struct timeval	last_eat;
-
-	void		*shared_data;
+	uint64_t		id;
+	unsigned long	last_eat;
+	void			*shared_data;
 }	t_philo_data;
 
 typedef struct s_philosopher	*t_philosopher;
@@ -43,6 +41,7 @@ struct s_philosopher {
 	pthread_t		thread;
 };
 
+unsigned long	time_now_millisecond(void);
 void				update_last_eat(t_philo_data *philo);
 
 t_philosopher		create_philosopher(uint64_t id, void *shared_data);
