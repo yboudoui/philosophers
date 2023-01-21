@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 13:27:15 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/18 18:15:11 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/21 17:47:32 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,72 @@
 #include "pool.h"
 #include <stdio.h>
 #include <unistd.h>
+
+bool	anyone_died(t_philo_data *philo)
+{
+	t_pool_data		pool;
+	bool			death;
+
+	death = false;
+	pool = philo->shared_data;
+	pthread_mutex_lock(&pool->dead_mutex);
+	death = pool->dead;
+	pthread_mutex_unlock(&pool->dead_mutex);
+	return (death);
+}
+
+bool	must_die(t_philo_data *philo)
+{
+	unsigned long	now;
+	bool			die;
+	t_pool_data		pool;
+
+	die = false;
+	pool = philo->shared_data;
+	pthread_mutex_lock(&pool->print_mutex);
+	pthread_mutex_lock(&pool->dead_mutex);
+	now = time_now_millisecond();
+//	printf("[%lu] now %lu - last eat %lu = %lu\n", philo->id + 1, now, philo->last_eat, now - philo->last_eat);
+	if (pool->dead)
+		die = true;
+	else if ((now - philo->last_eat) >= (unsigned long)pool->arg.time_to_die)
+	{
+		pool->dead = true;
+		printf("%ld %lu died\n", elapse_time(philo), philo->id + 1);
+		die = true;
+	}
+	pthread_mutex_unlock(&pool->dead_mutex);
+	pthread_mutex_unlock(&pool->print_mutex);
+	return (die);
+}
+
+bool	try_wait(unsigned long ms, t_philo_data *philo)
+{
+	unsigned long	start;
+	unsigned long	now;
+	t_pool_data		pool;
+
+	pool = philo->shared_data;
+	start = time_now_millisecond();
+	now = start;
+	ms /= 1000;
+	while (!must_die(philo) && (now - start) < ms)
+	{
+		now = time_now_millisecond();
+/*
+		pthread_mutex_lock(&pool->print_mutex);
+		if (philo->id + 1 == 7)
+			printf("[%lu] wait %lu, elapse %lu \n", philo->id + 1, ms, now - start);
+		pthread_mutex_unlock(&pool->print_mutex);
+*/
+		if ((now - start) >= (unsigned long)pool->arg.time_to_die)
+			return (false);
+		if (must_die(philo) || anyone_died(philo))
+			return (false);
+		usleep(500);
+	}
+	return (true);
+}
 
 void	print(char *str, t_philo_data *philo)
 {
@@ -23,7 +89,10 @@ void	print(char *str, t_philo_data *philo)
 		return ;
 	pool = philo->shared_data;
 	pthread_mutex_lock(&pool->print_mutex);
-	printf("%ld %lu %s\n", diff(pool), philo->id + 1, str);
+	pthread_mutex_lock(&pool->dead_mutex);
+	if (pool->dead == false)
+		printf("%ld %lu %s\n", elapse_time(philo), philo->id + 1, str);
+	pthread_mutex_unlock(&pool->dead_mutex);
 	pthread_mutex_unlock(&pool->print_mutex);
 }
 
@@ -67,14 +136,14 @@ void	take_fork(t_philo_data *philo)
 	pthread_mutex_unlock(&pool->forks_mutex[r]);
 }
 
-void	is_eating(t_philo_data *philo)
+bool	is_eating(t_philo_data *philo)
 {
 	int	l;
 	int	r;
 	t_pool_data	pool;
 
 	if (philo == NULL)
-		return ;
+		return (false);
 	pool = philo->shared_data;
 	init_l_r(philo->id, pool, &l, &r);
 	pthread_mutex_lock(&pool->forks_mutex[l]);
@@ -82,13 +151,13 @@ void	is_eating(t_philo_data *philo)
 	if (pool->forks[l] && pool->forks[r])
 	{
 		print("is eating", philo);
-		update_last_eat(philo);
-		usleep(pool->arg.time_to_eat);
+		philo->last_eat = time_now_millisecond();
 		pool->forks[l] = false;
 		pool->forks[r] = false;
 	}
 	pthread_mutex_unlock(&pool->forks_mutex[r]);
 	pthread_mutex_unlock(&pool->forks_mutex[l]);
+	return (try_wait(pool->arg.time_to_eat, philo));
 }
 
 void	is_thinking(t_philo_data *philo)
@@ -98,15 +167,28 @@ void	is_thinking(t_philo_data *philo)
 	print("is thinking", philo);
 }
 
-void	is_sleeping(t_philo_data *philo)
+bool	is_sleeping(t_philo_data *philo)
 {
 	t_pool_data	pool;
 
 	if (philo == NULL)
-		return ;
+		return (false);
 	pool = philo->shared_data;
 	print("is sleeping", philo);
-	usleep(pool->arg.time_to_sleep);
+	return (try_wait(pool->arg.time_to_sleep, philo));
+}
+
+bool	wait_to_start(t_philo_data *philo)
+{
+	t_pool_data		pool;
+	bool			continu;
+
+	continu = true;
+	pool = philo->shared_data;
+	pthread_mutex_lock(&pool->mutex_start);
+	continu = !(*pool->start);
+	pthread_mutex_unlock(&pool->mutex_start);
+	return (continu);
 }
 
 void	*routine(void *ptr)
@@ -118,22 +200,19 @@ void	*routine(void *ptr)
 		return (NULL);
 	philo = ptr;
 	pool = philo->shared_data;
-	unsigned long	a;
-	unsigned long	b;
+	while (wait_to_start(ptr))
+		usleep(5);
+	philo->last_eat = time_now_millisecond();
 	while (42)
 	{
-		a = elapse_time(ptr);
-		b = pool->arg.time_to_die;
-//		if (a > b)
-		{
-			pthread_mutex_lock(&pool->print_mutex);
-			printf("============%lu %lu\n", a, b);
-			pthread_mutex_unlock(&pool->print_mutex);
-		}
+		if (must_die(ptr))
+			break ;
 		take_fork(ptr);
-		is_eating(ptr);
+		if (!is_eating(ptr))
+			break ;
 		is_thinking(ptr);
-		is_sleeping(ptr);
+		if (!is_sleeping(ptr))
+			break ;
 	}
 	return (NULL);
 }

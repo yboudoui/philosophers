@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 15:35:00 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/18 18:10:09 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/21 14:09:21 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,15 @@
 
 typedef struct s_pool_data	*t_pool_data;
 struct s_pool_data {
-	struct timeval	start_time;
-//	pthread_mutex_t	dead_mutex;
+	struct timeval	*start_time;
+
+	pthread_mutex_t	dead_mutex;
+	bool			dead;
+
 	pthread_mutex_t	print_mutex;
-//	bool			dead;
+
+	pthread_mutex_t	mutex_start;
+	bool			*start;
 
 	t_input			arg;
 
@@ -38,6 +43,9 @@ struct s_pool_data {
 	pthread_mutex_t	*forks_mutex;
 	bool			*forks;
 };
+
+unsigned long	time_now_millisecond(void);
+unsigned long	elapse(struct timeval a, struct timeval b);
 
 unsigned long	elapse_time(t_philo_data *philo);
 unsigned long		diff(t_pool_data data);

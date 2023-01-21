@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 13:47:03 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/17 08:21:26 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/21 17:47:05 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ int	parse_arg(int ac, char *av[], t_input *out)
 			return (0);
 		index += 1;
 	}
-	(*out) = cast.data;
-	return (index);
+//	cast.data.time_to_die *= 1000;
+	cast.data.time_to_eat *= 1000;
+	cast.data.time_to_sleep *= 1000;
+	return ((*out) = cast.data, index);
 }
