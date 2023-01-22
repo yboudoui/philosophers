@@ -6,7 +6,7 @@
 #    By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/19 14:53:15 by yboudoui          #+#    #+#              #
-#    Updated: 2023/01/22 18:37:19 by yboudoui         ###   ########.fr        #
+#    Updated: 2023/01/22 20:28:00 by yboudoui         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -71,7 +71,7 @@ valgrind:	fclean
 			@$(MAKE) all -C . CFLAGS="-Wall -Wextra -Werror -g3"
 			@valgrind														\
 			--tool=helgrind													\
-			./$(NAME) 5 800 200 200										\
+			./$(NAME) 7 800 200 200										\
 
 valgrind_leaks:	fclean
 			@$(MAKE) all -C . CFLAGS="-Wall -Wextra -Werror -g3"

@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 17:52:04 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/22 17:19:48 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/22 20:24:29 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,11 @@ typedef void						*(t_fp_routine)(void *);
 typedef enum e_status {
 	HAS_TAKE_FORK,
 	IS_THINKING,
-	IS_EATING = 2,
-	IS_SLEEPING = 3,
+	IS_EATING,
+	IS_SLEEPING,
 	MAX_STATUS,
+	MUST_DIE,
+	MUST_WAIT_TO_DIE,
 }	t_status;
 
 /* ************************************************************************** */
@@ -102,8 +104,7 @@ typedef struct s_pool {
 }	t_pool;
 
 int					pool(t_input arg, t_fp_routine routine);
-bool				try_wait(t_philo_data *philo);
-bool				print(t_philo_data *philo);
+bool				print(t_philo_data *philo, t_status status);
 
 /* ************************************************************************** */
 bool				wait_start(t_philo_data *philo);

@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/21 17:50:48 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/22 18:27:19 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/22 20:25:26 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,13 @@ bool	wait_start(t_philo_data *philo)
 
 void	mutex_fork(bool lock, t_philo_data *philo, t_hands hand)
 {
-	int	(*func[MAX_HANDS])(pthread_mutex_t *) = {
+	static int	(*func[MAX_HANDS])(pthread_mutex_t *) = {
 		pthread_mutex_unlock,
 		pthread_mutex_lock,
 	};
 
+	if (philo->pool->size == 1 && hand == RIGHT)
+		return ;
 	func[lock](&philo->pool->forks_mutex[philo->fork[hand]]);
 }
 
@@ -49,14 +51,14 @@ bool	take_fork(t_philo_data *philo)
 	if (philo->pool->forks[philo->fork[LEFT]] == false)
 	{
 		philo->pool->forks[philo->fork[LEFT]] = true;
-		philo->status = HAS_TAKE_FORK;
-		print(philo);
+		print(philo, HAS_TAKE_FORK);
+		if (philo->pool->size == 1)
+			print(philo, MUST_WAIT_TO_DIE);
 	}
 	if (philo->pool->forks[philo->fork[RIGHT]] == false)
 	{
 		philo->pool->forks[philo->fork[RIGHT]] = true;
-		philo->status = HAS_TAKE_FORK;
-		print(philo);
+		print(philo, HAS_TAKE_FORK);
 	}
 	mutex_fork(false, philo, RIGHT);
 	mutex_fork(false, philo, LEFT);
@@ -72,10 +74,10 @@ bool	is_eating(t_philo_data *philo)
 		return (false);
 	mutex_fork(true, philo, LEFT);
 	mutex_fork(true, philo, RIGHT);
-	if (philo->pool->forks[philo->fork[LEFT]] &&  philo->pool->forks[philo->fork[RIGHT]])
+	if (philo->pool->forks[philo->fork[LEFT]]
+		&& philo->pool->forks[philo->fork[RIGHT]])
 	{
-		philo->status = IS_EATING;
-		out = print(philo);
+		out = print(philo, IS_EATING);
 		philo->last_eat = time_now_millisecond();
 		philo->pool->forks[philo->fork[LEFT]] = false;
 		philo->pool->forks[philo->fork[RIGHT]] = false;
@@ -89,14 +91,12 @@ bool	is_sleeping(t_philo_data *philo)
 {
 	if (philo == NULL)
 		return (false);
-	philo->status = IS_SLEEPING;
-	return (print(philo));
+	return (print(philo, IS_SLEEPING));
 }
 
 bool	is_thinking(t_philo_data *philo)
 {
 	if (philo == NULL)
 		return (false);
-	philo->status = IS_THINKING;
-	return (print(philo));
+	return (print(philo, IS_THINKING));
 }
