@@ -6,7 +6,7 @@
 #    By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/19 14:53:15 by yboudoui          #+#    #+#              #
-#    Updated: 2023/01/21 17:59:17 by yboudoui         ###   ########.fr        #
+#    Updated: 2023/01/22 18:24:49 by yboudoui         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -71,7 +71,7 @@ valgrind:	fclean
 			@$(MAKE) all -C . CFLAGS="-Wall -Wextra -Werror -g3"
 			@valgrind														\
 			--tool=helgrind													\
-			./$(NAME) 10 30 20 20										\
+			./$(NAME) 4 410 200 200										\
 
 valgrind_leaks:	fclean
 			@$(MAKE) all -C . CFLAGS="-Wall -Wextra -Werror -g3"
@@ -84,3 +84,15 @@ valgrind_leaks:	fclean
 			./$(NAME) 10 10 10 10											\
 
 .PHONY:		all clean fclean re
+
+# ./philosophers 5 400 200 200
+# ./philosophers 4 400 200 200
+# ./philosophers 1 800 200 200
+# ./philosophers 5 800 200 200
+# ./philosophers 5 800 200 200
+# ./philosophers 4 410 200 200
+# ./philosophers 4 310 200 100
+# ./philosophers 1 800 200 200
+# ./philosophers 5 800 200 200
+# ./philosophers 5 800 90 60
+
