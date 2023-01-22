@@ -6,11 +6,11 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 07:36:50 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/21 18:19:18 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/22 15:10:50 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pool.h"
+#include "philosopher.h"
 
 unsigned long	time_now_millisecond(void)
 {
@@ -20,24 +20,18 @@ unsigned long	time_now_millisecond(void)
 	return (((now.tv_sec * 1e6) + now.tv_usec) / 1e3);
 }
 
-unsigned long	elapse(struct timeval new, struct timeval old)
+unsigned long	elapse_time(t_philo_data *philo)
 {
 	unsigned long	a;
 	unsigned long	b;
+	struct timeval	old;
+	struct timeval	new;
 
+	old = (*philo->pool->start_time);
+	gettimeofday(&new, NULL);
 	a = (new.tv_sec * 1e6) + new.tv_usec;
 	b = (old.tv_sec * 1e6) + old.tv_usec;
 	return ((a - b) / 1e3);
-}
-
-unsigned long	elapse_time(t_philo_data *philo)
-{
-	struct timeval	new;
-	t_pool_data		pool;
-
-	pool = philo->shared_data;
-	gettimeofday(&new, NULL);
-	return (elapse(new, (*pool->start_time)));
 }
 
 t_pool_data	create_pool_data(t_input arg)

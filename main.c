@@ -6,20 +6,31 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 13:27:15 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/21 17:58:13 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/22 18:36:58 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "routine.h"
+#include "philosopher.h"
+
+void	*routine(void *ptr)
+{
+	if (ptr == NULL)
+		return (NULL);
+	wait_start(ptr);
+	while (is_thinking(ptr)
+		&& take_fork(ptr)
+		&& is_eating(ptr)
+		&& is_sleeping(ptr)
+	)
+		continue ;
+	return (NULL);
+}
 
 int	main(int ac, char *av[])
 {
 	t_input	out;
-	int		nb_arg;
 
-	nb_arg = parse_arg(ac, av, &out);
-	if (!nb_arg)
-		return (-1);
-	pool(out, routine);
+	if (parse_arg(ac, av, &out))
+		pool(out, routine);
 	return (0);
 }
