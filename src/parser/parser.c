@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 13:47:03 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/22 16:33:53 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/23 17:37:40 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,9 @@ int	parse_arg(int ac, char *av[], t_input *out)
 	if (ac < 4 || ac > 5)
 		return (0);
 	index = 0;
+	while (index < 5)
+		cast.raw[index++] = 0;
+	index = 0;
 	while (index < ac)
 	{
 		cast.raw[index] = 0;
@@ -36,5 +39,6 @@ int	parse_arg(int ac, char *av[], t_input *out)
 		cast.raw[index] = value;
 		index += 1;
 	}
+	cast.data.eat = (ac == 5);
 	return ((*out) = cast.data, index);
 }

@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 17:52:04 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/22 20:24:29 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/23 18:02:26 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,14 +44,15 @@ typedef enum e_status {
 /* ************************************************************************** */
 
 typedef enum e_hands {
-	LEFT,
-	RIGHT,
+	RIGHT = false,
+	LEFT = true,
 	MAX_HANDS,
 }	t_hands;
 
 typedef struct s_philo_data {
 	uint64_t		id;
 	uint64_t		fork[MAX_HANDS];
+	uint64_t		nb_eat;
 	t_status		status;
 	unsigned long	last_eat;
 	t_pool_data		pool;
@@ -85,6 +86,7 @@ struct s_pool_data {
 	pthread_mutex_t	dead_mutex;
 	pthread_mutex_t	print_mutex;
 	t_input			arg;
+	size_t			nb_eat;
 	size_t			size;
 	pthread_mutex_t	*forks_mutex;
 	bool			*forks;
@@ -103,6 +105,8 @@ typedef struct s_pool {
 	t_philosopher_array	philosophers;
 }	t_pool;
 
+bool				should_die(t_philo_data *philo);
+bool				must_die(t_philo_data *philo);
 int					pool(t_input arg, t_fp_routine routine);
 bool				print(t_philo_data *philo, t_status status);
 

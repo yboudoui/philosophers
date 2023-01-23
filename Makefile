@@ -6,7 +6,7 @@
 #    By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/19 14:53:15 by yboudoui          #+#    #+#              #
-#    Updated: 2023/01/23 13:09:18 by yboudoui         ###   ########.fr        #
+#    Updated: 2023/01/23 17:45:39 by yboudoui         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,7 @@ SRCS	=\
 ./src/utils/atoi.c\
 ./src/parser/parser.c\
 ./src/fork.c\
+./src/is_eating.c\
 ./src/routine.c\
 ./src/routine_utils.c\
 ./src/philosopher.c\
@@ -34,8 +35,6 @@ SRCS	=\
 ./src/pool/pool.c\
 
 INCS	=\
-./inc\
-./inc\
 ./inc/utils\
 ./inc/utils/memory\
 ./inc/parser\
@@ -71,7 +70,7 @@ valgrind:	fclean
 			@$(MAKE) all -C . CFLAGS="-Wall -Wextra -Werror -g3"
 			@valgrind														\
 			--tool=helgrind													\
-			./$(NAME) 5 800 90 60										\
+			./$(NAME) 2 400 200 200	5									\
 
 valgrind_leaks:	fclean
 			@$(MAKE) all -C . CFLAGS="-Wall -Wextra -Werror -g3"
@@ -81,7 +80,7 @@ valgrind_leaks:	fclean
 			--show-leak-kinds=all											\
 			--track-origins=yes												\
 			--track-fds=yes													\
-			./$(NAME) 10 10 10 10											\
+			./$(NAME) 2 400 200 100 3										\
 
 .PHONY:		all clean fclean re
 

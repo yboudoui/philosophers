@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/21 17:51:28 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/23 13:03:19 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/23 18:09:05 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@ bool	try_wait_status(t_philo_data *philo, t_status status)
 	if (status == HAS_TAKE_FORK)
 		return (true);
 	ms = ((philo->pool->arg.time_to_die - (now - philo->last_eat)) / 10) * 7;
-//	ms = philo->pool->arg.time_to_die - (now - philo->last_eat);
 	if (status == MUST_WAIT_TO_DIE)
 		ms = now - philo->last_eat + philo->pool->arg.time_to_die;
 	if (status == IS_EATING)
@@ -59,15 +58,33 @@ const char	*g_status_message[MAX_STATUS] = {
 [HAS_TAKE_FORK] = "has taken a fork",
 };
 
+bool	should_die(t_philo_data *philo)
+{
+	bool	death;
+
+	pthread_mutex_lock(&philo->pool->print_mutex);
+	death = philo->pool->dead;
+	pthread_mutex_unlock(&philo->pool->print_mutex);
+	return (death);
+}
+
+bool	must_die(t_philo_data *philo)
+{
+	pthread_mutex_lock(&philo->pool->print_mutex);
+	philo->pool->dead = true;
+	pthread_mutex_unlock(&philo->pool->print_mutex);
+	return (false);
+}
+
 bool	print(t_philo_data *philo, t_status status)
 {
 	unsigned long	now;
 
 	if (philo == NULL)
 		return (false);
+	if (should_die(philo))
+		return (false);
 	pthread_mutex_lock(&philo->pool->print_mutex);
-	if (philo->pool->dead)
-		return (pthread_mutex_unlock(&philo->pool->print_mutex), false);
 	now = time_now_millisecond();
 	if (status == MUST_WAIT_TO_DIE
 		|| (now - philo->last_eat) >= philo->pool->arg.time_to_die)

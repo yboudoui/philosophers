@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 07:36:50 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/22 15:10:50 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/23 18:01:48 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ t_pool_data	create_pool_data(t_input arg)
 	pthread_mutex_init(&out->mutex_start, NULL);
 	out->size = size;
 	out->arg = arg;
+	out->nb_eat = size;
 	return (out);
 }
 
