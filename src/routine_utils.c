@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/21 17:51:28 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/22 20:33:06 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/23 13:03:19 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,9 +37,12 @@ bool	try_wait_status(t_philo_data *philo, t_status status)
 
 	start = time_now_millisecond();
 	now = start;
-	ms = ((now - philo->last_eat) / 10) * 8;
+	if ((now - philo->last_eat) >= philo->pool->arg.time_to_die)
+		return (false);
 	if (status == HAS_TAKE_FORK)
 		return (true);
+	ms = ((philo->pool->arg.time_to_die - (now - philo->last_eat)) / 10) * 7;
+//	ms = philo->pool->arg.time_to_die - (now - philo->last_eat);
 	if (status == MUST_WAIT_TO_DIE)
 		ms = now - philo->last_eat + philo->pool->arg.time_to_die;
 	if (status == IS_EATING)

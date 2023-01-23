@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 13:27:15 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/22 19:55:18 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/23 12:32:47 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	*routine(void *ptr)
 		return (NULL);
 	wait_start(ptr);
 	while (is_thinking(ptr)
-		&& take_fork(ptr)
+//		&& take_fork(ptr)
 		&& is_eating(ptr)
 		&& is_sleeping(ptr)
 	)
