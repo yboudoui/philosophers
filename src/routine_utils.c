@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/21 17:51:28 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/24 18:18:25 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/24 19:40:11 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@ inline bool	should_die(t_philo_data *philo)
 {
 	unsigned long	now;
 
-	death(true, philo);
 	now = time_now_millisecond();
+	death(true, philo);
 	if (philo->pool->dead)
 		return (death(false, philo), true);
 	if ((now - philo->last_eat) >= philo->pool->arg.time_to_die)
@@ -48,7 +48,8 @@ bool	try_wait_status(t_philo_data *philo, t_status status)
 	unsigned long	now;
 	uint64_t		ms;
 
-	ms = 0;
+	ms = philo->pool->arg.time_to_eat;
+//	ms = 0;
 	if (should_die(philo))
 		return (false);
 	if (status == HAS_TAKE_FORK)
@@ -63,10 +64,10 @@ bool	try_wait_status(t_philo_data *philo, t_status status)
 		ms = philo->pool->arg.time_to_sleep;
 	while (ms && (now - start) < ms)
 	{
-		now = time_now_millisecond();
+		usleep(500);
 		if (should_die(philo))
 			return (false);
-		usleep(500);
+		now = time_now_millisecond();
 	}
 	return (true);
 }
@@ -81,11 +82,9 @@ inline void	print(t_philo_data *philo, t_status status)
 	if (!philo->pool->print)
 	{
 		if (status != NO_MORE_MEAL)
-		{
 			printf("%ld %lu %s\n",
 				elapse_time(philo), philo->id + 1, message[status]);
-		}
-		philo->pool->print = (status == DIED);
+		philo->pool->print = ((status == DIED) || (status == NO_MORE_MEAL));
 	}
 	pthread_mutex_unlock(&philo->pool->print_mutex);
 }

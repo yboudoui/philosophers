@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 17:04:43 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/24 17:50:35 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/24 19:25:51 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,8 @@ bool	is_eating(t_philo_data *philo)
 	if (out)
 	{
 		print(philo, IS_EATING);
-		out = try_wait_status(philo, IS_EATING);
 		philo->last_eat = time_now_millisecond();
+		out = try_wait_status(philo, IS_EATING);
 		philo->status = IS_SLEEPING;
 		pthread_mutex_lock(&philo->pool->dead_mutex);
 		philo->pool->nb_eat -= (philo->pool->arg.meal == ++philo->nb_eat);
