@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/21 17:51:28 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/24 17:50:18 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/24 18:18:25 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,11 +78,13 @@ inline void	print(t_philo_data *philo, t_status status)
 	[HAS_TAKE_FORK] = "has taken a fork", [DIED] = "died"};
 
 	pthread_mutex_lock(&philo->pool->print_mutex);
-	philo->pool->print = (status == NO_MORE_MEAL);
 	if (!philo->pool->print)
 	{
-		printf("%ld %lu %s\n",
-			elapse_time(philo), philo->id + 1, message[status]);
+		if (status != NO_MORE_MEAL)
+		{
+			printf("%ld %lu %s\n",
+				elapse_time(philo), philo->id + 1, message[status]);
+		}
 		philo->pool->print = (status == DIED);
 	}
 	pthread_mutex_unlock(&philo->pool->print_mutex);
