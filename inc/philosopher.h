@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 17:52:04 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/24 11:05:00 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/24 17:47:42 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,8 @@ typedef enum e_status {
 	IS_EATING,
 	IS_SLEEPING,
 	DIED,
+	NO_MORE_MEAL,
 	MAX_STATUS,
-	MUST_DIE,
 	MUST_WAIT_TO_DIE,
 }	t_status;
 
