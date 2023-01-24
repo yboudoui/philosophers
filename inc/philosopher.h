@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 17:52:04 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/23 18:02:26 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/24 11:05:00 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ typedef enum e_status {
 	IS_THINKING,
 	IS_EATING,
 	IS_SLEEPING,
+	DIED,
 	MAX_STATUS,
 	MUST_DIE,
 	MUST_WAIT_TO_DIE,
@@ -84,6 +85,7 @@ struct s_pool_data {
 	pthread_mutex_t	mutex_start;
 	bool			dead;
 	pthread_mutex_t	dead_mutex;
+	bool			print;
 	pthread_mutex_t	print_mutex;
 	t_input			arg;
 	size_t			nb_eat;
@@ -106,9 +108,9 @@ typedef struct s_pool {
 }	t_pool;
 
 bool				should_die(t_philo_data *philo);
-bool				must_die(t_philo_data *philo);
+bool				try_wait_status(t_philo_data *philo, t_status status);
 int					pool(t_input arg, t_fp_routine routine);
-bool				print(t_philo_data *philo, t_status status);
+void				print(t_philo_data *philo, t_status status);
 
 /* ************************************************************************** */
 bool				wait_start(t_philo_data *philo);

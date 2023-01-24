@@ -6,27 +6,39 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/21 17:51:28 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/23 18:09:05 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/24 11:14:00 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosopher.h"
 
-bool	try_wait(uint64_t ms, t_philo_data *philo)
+static void	death(bool lock, t_philo_data *philo)
 {
-	unsigned long	start;
+	static int	(*func[MAX_HANDS])(pthread_mutex_t *) = {
+		pthread_mutex_unlock, pthread_mutex_lock};
+
+	func[lock](&philo->pool->dead_mutex);
+}
+
+inline bool	should_die(t_philo_data *philo)
+{
+	bool			any_death;
 	unsigned long	now;
 
-	start = time_now_millisecond();
-	now = start;
-	while ((now - start) < ms)
-	{
-		now = time_now_millisecond();
-		if ((now - start) >= philo->pool->arg.time_to_die)
-			return (false);
-		usleep(500);
-	}
-	return (true);
+	if (philo == NULL)
+		return (true);
+	death(true, philo);
+	any_death = philo->pool->dead;
+	now = time_now_millisecond();
+	if (any_death)
+		return (death(false, philo), true);
+	if ((now - philo->last_eat) >= philo->pool->arg.time_to_die)
+		philo->pool->dead = true;
+	else if (philo->pool->arg.eat && philo->pool->nb_eat == 0)
+		philo->pool->dead = true;
+	if (philo->pool->dead)
+		print(philo, DIED);
+	return (death(false, philo), any_death);
 }
 
 bool	try_wait_status(t_philo_data *philo, t_status status)
@@ -35,69 +47,69 @@ bool	try_wait_status(t_philo_data *philo, t_status status)
 	unsigned long	now;
 	uint64_t		ms;
 
-	start = time_now_millisecond();
-	now = start;
-	if ((now - philo->last_eat) >= philo->pool->arg.time_to_die)
+	if (should_die(philo))
 		return (false);
 	if (status == HAS_TAKE_FORK)
 		return (true);
-	ms = ((philo->pool->arg.time_to_die - (now - philo->last_eat)) / 10) * 7;
+	start = time_now_millisecond();
+	now = start;
+/// ICI !!
+	if (philo->pool->arg.time_to_die > (now - philo->last_eat))
+		ms = (philo->pool->arg.time_to_die - (now - philo->last_eat)) * 0.7;
 	if (status == MUST_WAIT_TO_DIE)
 		ms = now - philo->last_eat + philo->pool->arg.time_to_die;
-	if (status == IS_EATING)
+	else if (status == IS_EATING)
 		ms = philo->pool->arg.time_to_eat;
 	else if (status == IS_SLEEPING)
 		ms = philo->pool->arg.time_to_sleep;
-	return (try_wait(ms, philo));
+	while ((now - start) < ms)
+	{
+		now = time_now_millisecond();
+		if (should_die(philo))
+			return (false);
+		usleep(500);
+	}
+	return (true);
 }
 
-const char	*g_status_message[MAX_STATUS] = {
-[IS_EATING] = "is eating",
-[IS_SLEEPING] = "is sleeping",
-[IS_THINKING] = "is thinking",
-[HAS_TAKE_FORK] = "has taken a fork",
-};
-
-bool	should_die(t_philo_data *philo)
+inline void	print(t_philo_data *philo, t_status status)
 {
-	bool	death;
+	const char	*message[MAX_STATUS] = {[IS_EATING] = "is eating",
+	[IS_SLEEPING] = "is sleeping", [IS_THINKING] = "is thinking",
+	[HAS_TAKE_FORK] = "has taken a fork", [DIED] = "died"};
 
 	pthread_mutex_lock(&philo->pool->print_mutex);
-	death = philo->pool->dead;
+	if (!philo->pool->print)
+	{
+		printf("%ld %lu %s\n",
+			elapse_time(philo), philo->id + 1, message[status]);
+		philo->pool->print = (status == DIED);
+	}
 	pthread_mutex_unlock(&philo->pool->print_mutex);
-	return (death);
 }
 
-bool	must_die(t_philo_data *philo)
-{
-	pthread_mutex_lock(&philo->pool->print_mutex);
-	philo->pool->dead = true;
-	pthread_mutex_unlock(&philo->pool->print_mutex);
-	return (false);
-}
-
-bool	print(t_philo_data *philo, t_status status)
+/*
+inline bool	print(t_philo_data *philo, t_status status)
 {
 	unsigned long	now;
 
-	if (philo == NULL)
+	if (philo == NULL || should_die(philo))
 		return (false);
-	if (should_die(philo))
-		return (false);
-	pthread_mutex_lock(&philo->pool->print_mutex);
+	death(true, philo);
 	now = time_now_millisecond();
-	if (status == MUST_WAIT_TO_DIE
-		|| (now - philo->last_eat) >= philo->pool->arg.time_to_die)
+	if (!philo->pool->dead && (status == MUST_WAIT_TO_DIE)//)
+//		|| (now - philo->last_eat) >= philo->pool->arg.time_to_die))
 	{
 		philo->pool->dead = true;
 		try_wait_status(philo, status);
 		printf("%ld %lu died\n", elapse_time(philo), philo->id + 1);
-		return (pthread_mutex_unlock(&philo->pool->print_mutex), false);
+		return (death(false, philo), false);
 	}
-	if (philo->status < MAX_STATUS)
+	if (!philo->pool->dead && philo->status < MAX_STATUS)
 		printf("%ld %lu %s\n",
 			elapse_time(philo), philo->id + 1,
 			g_status_message[status]);
-	pthread_mutex_unlock(&philo->pool->print_mutex);
+	death(false, philo);
 	return (try_wait_status(philo, status));
 }
+*/
