@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/21 17:50:48 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/24 11:10:15 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/24 12:37:18 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,18 +27,17 @@ bool	wait_start(t_philo_data *philo)
 		usleep(5);
 	}
 	philo->last_eat = time_now_millisecond();
-//	if (should_die(philo))
-//		return (false);
 	return (true);
 }
 
 bool	is_sleeping(t_philo_data *philo)
 {
-	if (should_die(philo))
+	if (philo == NULL)
 		return (false);
 	if (philo->status != IS_SLEEPING)
 		return (true);
-//	return (philo->status = IS_THINKING, print(philo, IS_SLEEPING));
+	if (should_die(philo))
+		return (false);
 	philo->status = IS_THINKING;
 	print(philo, IS_SLEEPING);
 	return (try_wait_status(philo, IS_SLEEPING));
@@ -46,11 +45,12 @@ bool	is_sleeping(t_philo_data *philo)
 
 bool	is_thinking(t_philo_data *philo)
 {
-	if (should_die(philo))
+	if (philo == NULL)
 		return (false);
 	if (philo->status != IS_THINKING)
 		return (true);
-//	return (philo->status = IS_EATING, print(philo, IS_THINKING));
+	if (should_die(philo))
+		return (false);
 	philo->status = IS_EATING;
 	print(philo, IS_THINKING);
 	return (try_wait_status(philo, IS_THINKING));

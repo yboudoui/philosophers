@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/21 17:51:28 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/24 11:14:00 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/24 12:37:25 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,23 +22,20 @@ static void	death(bool lock, t_philo_data *philo)
 
 inline bool	should_die(t_philo_data *philo)
 {
-	bool			any_death;
 	unsigned long	now;
 
-	if (philo == NULL)
-		return (true);
 	death(true, philo);
-	any_death = philo->pool->dead;
 	now = time_now_millisecond();
-	if (any_death)
+	if (philo->pool->dead)
 		return (death(false, philo), true);
 	if ((now - philo->last_eat) >= philo->pool->arg.time_to_die)
 		philo->pool->dead = true;
 	else if (philo->pool->arg.eat && philo->pool->nb_eat == 0)
 		philo->pool->dead = true;
-	if (philo->pool->dead)
-		print(philo, DIED);
-	return (death(false, philo), any_death);
+	if (!philo->pool->dead)
+		return (death(false, philo), false);
+	print(philo, DIED);
+	return (death(false, philo), true);
 }
 
 bool	try_wait_status(t_philo_data *philo, t_status status)
@@ -53,9 +50,9 @@ bool	try_wait_status(t_philo_data *philo, t_status status)
 		return (true);
 	start = time_now_millisecond();
 	now = start;
-/// ICI !!
-	if (philo->pool->arg.time_to_die > (now - philo->last_eat))
-		ms = (philo->pool->arg.time_to_die - (now - philo->last_eat)) * 0.7;
+//	if (philo->pool->arg.time_to_die > (now - philo->last_eat))
+		ms = (now - philo->last_eat) * 0.7;
+//		ms = (philo->pool->arg.time_to_die - (now - philo->last_eat)) * 0.7;
 	if (status == MUST_WAIT_TO_DIE)
 		ms = now - philo->last_eat + philo->pool->arg.time_to_die;
 	else if (status == IS_EATING)

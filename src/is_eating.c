@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/23 17:04:43 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/24 11:00:52 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/24 12:33:44 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,12 @@ bool	is_eating(t_philo_data *philo)
 {
 	bool	out;
 
-	if (should_die(philo))
-		return (false);
+//	if (philo == NULL)
+//		return (false);
 	if (philo->status != IS_EATING)
 		return (true);
+	if (should_die(philo))
+		return (false);
 	out = lock_forks(philo);
 	if (out)
 	{
