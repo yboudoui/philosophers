@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/21 17:51:28 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/24 19:40:11 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/25 11:51:33 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,20 +26,21 @@ inline bool	should_die(t_philo_data *philo)
 
 	now = time_now_millisecond();
 	death(true, philo);
-	if (philo->pool->dead)
-		return (death(false, philo), true);
 	if ((now - philo->last_eat) >= philo->pool->arg.time_to_die)
+	{
 		philo->pool->dead = true;
+		print(philo, DIED);
+		return (death(false, philo), true);
+	}
 	else if (philo->pool->arg.eat && philo->pool->nb_eat == 0)
 	{
 		philo->pool->dead = true;
 		print(philo, NO_MORE_MEAL);
 		return (death(false, philo), true);
 	}
-	if (!philo->pool->dead)
-		return (death(false, philo), false);
-	print(philo, DIED);
-	return (death(false, philo), true);
+	if (philo->pool->dead)
+		return (death(false, philo), true);
+	return (death(false, philo), false);
 }
 
 bool	try_wait_status(t_philo_data *philo, t_status status)
@@ -48,21 +49,35 @@ bool	try_wait_status(t_philo_data *philo, t_status status)
 	unsigned long	now;
 	uint64_t		ms;
 
-	ms = philo->pool->arg.time_to_eat;
-//	ms = 0;
+//	ms = philo->pool->arg.time_to_die - (now - philo->last_eat);
 	if (should_die(philo))
 		return (false);
-	if (status == HAS_TAKE_FORK)
+//	ms = philo->pool->arg.time_to_think;
+	ms = 10;
+
+//	ms = philo->pool->arg.time_to_eat - 10;
+	if (status == IS_THINKING)// && philo->id % 2)
 		return (true);
 	start = time_now_millisecond();
 	now = start;
+	
+/*
+	ms = philo->pool->arg.time_to_die - (now - philo->last_eat);
+	if (ms == 0)
+		return (true);
+
+	pthread_mutex_lock(&philo->pool->print_mutex);
+	printf("[%lu] %lu\n", philo->id + 1, ms);
+	pthread_mutex_unlock(&philo->pool->print_mutex);
+*/
+//	ms = philo->pool->arg.time_to_die - (now - philo->last_eat);
 	if (status == MUST_WAIT_TO_DIE)
 		ms = now - philo->last_eat + philo->pool->arg.time_to_die;
-	else if (status == IS_EATING)
+	if (status == IS_EATING)
 		ms = philo->pool->arg.time_to_eat;
 	else if (status == IS_SLEEPING)
 		ms = philo->pool->arg.time_to_sleep;
-	while (ms && (now - start) < ms)
+	while ((now - start) < ms)
 	{
 		usleep(500);
 		if (should_die(philo))

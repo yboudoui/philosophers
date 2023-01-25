@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 17:51:41 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/23 17:26:56 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/25 10:48:39 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ t_philosopher	create_philosopher(uint64_t id, t_pool_data pool)
 	out->data.pool = pool;
 	out->data.fork[(id % 2)] = id;
 	out->data.fork[!(id % 2)] = (id + 1) % pool->size;
-	out->data.status = (IS_THINKING * (id % 2)) + (IS_EATING * !(id % 2));
+	out->data.status = (IS_THINKING * !(id % 2)) + (IS_EATING * (id % 2));
 	return (out);
 }
 

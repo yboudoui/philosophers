@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 17:52:04 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/24 17:47:42 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/25 11:09:28 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,18 +80,21 @@ void				destroy_philosopher_array(void *data);
 /* ************************************************************************** */
 
 struct s_pool_data {
-	bool			*start;
-	struct timeval	*start_time;
-	pthread_mutex_t	mutex_start;
-	bool			dead;
-	pthread_mutex_t	dead_mutex;
-	bool			print;
-	pthread_mutex_t	print_mutex;
-	t_input			arg;
-	size_t			nb_eat;
-	size_t			size;
-	pthread_mutex_t	*forks_mutex;
-	bool			*forks;
+	bool				*start;
+	size_t				is_all_started;
+	struct timeval		*start_time;
+	pthread_mutex_t		mutex_start;
+	bool				dead;
+	pthread_mutex_t		dead_mutex;
+	bool				print;
+	pthread_mutex_t		print_mutex;
+	t_input				arg;
+	size_t				nb_eat;
+	pthread_mutex_t		mutex_eat;
+	size_t				size;
+	pthread_mutex_t		*forks_mutex;
+	bool				*forks;
+	t_philosopher_array	*philosophers;
 };
 
 t_pool_data			create_pool_data(t_input arg);
@@ -107,6 +110,7 @@ typedef struct s_pool {
 	t_philosopher_array	philosophers;
 }	t_pool;
 
+void				update_last_eat(t_philo_data *philo);
 bool				should_die(t_philo_data *philo);
 bool				try_wait_status(t_philo_data *philo, t_status status);
 int					pool(t_input arg, t_fp_routine routine);

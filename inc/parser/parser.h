@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 13:47:36 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/24 17:41:37 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/25 11:26:49 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ typedef struct s_input {
 	uint64_t	time_to_sleep;
 	uint64_t	meal;
 	bool		eat;
+	uint64_t	time_to_think;
 }	t_input;
 
 int	parse_arg(int ac, char *av[], t_input *out);

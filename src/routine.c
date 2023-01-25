@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/21 17:50:48 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/24 18:49:23 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/25 12:29:01 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,21 +22,22 @@ bool	wait_start(t_philo_data *philo)
 	while (wait)
 	{
 		pthread_mutex_lock(&philo->pool->mutex_start);
-		wait = !(*philo->pool->start);
+		wait = !(*philo->pool->start);// && (philo->id % 2);
 		pthread_mutex_unlock(&philo->pool->mutex_start);
 		usleep(5);
 	}
-	philo->last_eat = time_now_millisecond();
+	pthread_mutex_lock(&philo->pool->mutex_start);
+	philo->pool->is_all_started += 1;
+	pthread_mutex_unlock(&philo->pool->mutex_start);
+	update_last_eat(philo);
+	if (philo->id % 2)
+		usleep(500);
 	return (true);
 }
 
 bool	is_sleeping(t_philo_data *philo)
 {
-	if (philo == NULL)
-		return (false);
-	if (philo->status != IS_SLEEPING)
-		return (true);
-	if (should_die(philo))
+	if (philo == NULL && should_die(philo))
 		return (false);
 	philo->status = IS_THINKING;
 	print(philo, IS_SLEEPING);
@@ -45,12 +46,10 @@ bool	is_sleeping(t_philo_data *philo)
 
 bool	is_thinking(t_philo_data *philo)
 {
-	if (philo == NULL)
+	if (philo == NULL && should_die(philo))
 		return (false);
-	if (philo->status != IS_THINKING)
-		return (true);
-	if (should_die(philo))
-		return (false);
+//	if (philo->status != IS_THINKING)
+//		return (true);
 	philo->status = IS_EATING;
 	print(philo, IS_THINKING);
 	return (try_wait_status(philo, IS_THINKING));

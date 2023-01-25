@@ -6,7 +6,7 @@
 #    By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/06/19 14:53:15 by yboudoui          #+#    #+#              #
-#    Updated: 2023/01/24 17:44:05 by yboudoui         ###   ########.fr        #
+#    Updated: 2023/01/25 12:08:24 by yboudoui         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -66,11 +66,22 @@ re:			fclean all
 fsanitize:	fclean
 			@$(MAKE) all -C . CFLAGS="-Wall -Wextra -Werror -fsanitize=address"
 
+ARG					= 4 400 200 200
+#5 400 200 200
+#4 400 200 200
+#1 800 200 200
+#5 800 200 200
+#4 410 200 200
+#4 310 200 100
+#1 800 200 200
+#5 800 200 200
+#5 800 90 60
+
 valgrind:	fclean
 			@$(MAKE) all -C . CFLAGS="-Wall -Wextra -Werror -g3"
 			@valgrind														\
 			--tool=helgrind													\
-			./$(NAME) 4 800 200 200	3									\
+			./$(NAME) $(ARG)												\
 
 valgrind_leaks:	fclean
 			@$(MAKE) all -C . CFLAGS="-Wall -Wextra -Werror -g3"
@@ -80,17 +91,8 @@ valgrind_leaks:	fclean
 			--show-leak-kinds=all											\
 			--track-origins=yes												\
 			--track-fds=yes													\
-			./$(NAME) 2 400 200 100 3										\
+			./$(NAME) $(ARG)												\
 
 .PHONY:		all clean fclean re
 
-# ./philosophers 5 400 200 200
-# ./philosophers 4 400 200 200
-# ./philosophers 1 800 200 200
-# ./philosophers 5 800 200 200
-# ./philosophers 4 410 200 200
-# ./philosophers 4 310 200 100
-# ./philosophers 1 800 200 200
-# ./philosophers 5 800 200 200
-# ./philosophers 5 800 90 60
 
