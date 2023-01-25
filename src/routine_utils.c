@@ -6,7 +6,7 @@
 /*   By: yboudoui <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/21 17:51:28 by yboudoui          #+#    #+#             */
-/*   Updated: 2023/01/25 11:51:33 by yboudoui         ###   ########.fr       */
+/*   Updated: 2023/01/25 12:46:01 by yboudoui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,14 @@ bool	try_wait_status(t_philo_data *philo, t_status status)
 //	ms = philo->pool->arg.time_to_die - (now - philo->last_eat);
 	if (should_die(philo))
 		return (false);
-//	ms = philo->pool->arg.time_to_think;
 	ms = 10;
+	if (philo->pool->arg.time_to_eat > philo->pool->arg.time_to_sleep)
+	{
+		ms = philo->pool->arg.time_to_eat - philo->pool->arg.time_to_sleep;
+		usleep((ms * 1000));
+		return (true);
+	}
+//	ms = philo->pool->arg.time_to_think;
 
 //	ms = philo->pool->arg.time_to_eat - 10;
 	if (status == IS_THINKING)// && philo->id % 2)
