@@ -51,7 +51,6 @@ inline bool	try_wait_status(t_philo_data *philo, t_status status)
 
 	if (should_die(philo))
 		return (false);
-	ms = 10;
 	ms = philo->pool->arg.time_to_think * 0.7;
 	start = time_now_millisecond();
 	now = start;
@@ -61,13 +60,7 @@ inline bool	try_wait_status(t_philo_data *philo, t_status status)
 		ms = philo->pool->arg.time_to_eat;
 	else if (status == IS_SLEEPING)
 		ms = philo->pool->arg.time_to_sleep;
-	while ((now - start) < ms)
-	{
-		usleep(500);
-		if (should_die(philo))
-			return (false);
-		now = time_now_millisecond();
-	}
+	usleep(ms * 1000);
 	return (true);
 }
 
@@ -82,7 +75,7 @@ inline void	print(t_philo_data *philo, t_status status)
 	{
 		if (status != NO_MORE_MEAL)
 			printf("%ld %lu %s\n",
-				elapse_time(philo), philo->id + 1, message[status]);
+				elapse_time(philo) + 1, philo->id + 1, message[status]);
 		philo->pool->print = ((status == DIED) || (status == NO_MORE_MEAL));
 	}
 	pthread_mutex_unlock(&philo->pool->print_mutex);

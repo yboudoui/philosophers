@@ -62,7 +62,7 @@ re:			fclean all
 fsanitize:	fclean
 			@$(MAKE) all -C . CFLAGS="-Wall -Wextra -Werror -fsanitize=address"
 
-ARG					= 5 800 90 1
+ARG					= 200 410 200 200 10
 #5 400 200 200
 #4 400 200 200
 #1 800 200 200

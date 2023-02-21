@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "parser.h"
-# include <stdio.h>
+
 typedef union u_cast {
 	t_input		data;
 	uint64_t	raw[5];
@@ -39,11 +39,7 @@ int	parse_arg(int ac, char *av[], t_input *out)
 	}
 	cast.data.eat = (ac == 5);
 	cast.data.time_to_think = 0;
-	if (cast.raw[1] > (cast.raw[2] + cast.raw[3]) * 2)
-	{
-		cast.data.time_to_think = cast.raw[1];
-		cast.data.time_to_think -= ((cast.raw[2] + cast.raw[3]) * 2);
-	}
-	printf("%lu\n", cast.data.time_to_think);
+	if ((cast.raw[0] % 2) && !(cast.raw[2] < cast.raw[3]))
+		cast.data.time_to_think = cast.data.time_to_eat;
 	return ((*out) = cast.data, index);
 }

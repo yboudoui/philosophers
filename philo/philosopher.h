@@ -81,6 +81,7 @@ void				destroy_philosopher_array(void *data);
 
 struct s_pool_data {
 	bool				*start;
+	size_t				started_count;
 	size_t				is_all_started;
 	struct timeval		*start_time;
 	pthread_mutex_t		mutex_start;
